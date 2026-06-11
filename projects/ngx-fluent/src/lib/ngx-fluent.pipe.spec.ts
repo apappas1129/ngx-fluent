@@ -72,6 +72,9 @@ describe('NgxFluentPipe', () => {
 
     httpSpy.get.and.returnValue(of(translations.sv));
     fluentService.setLocale('sv');
+    // Angular 20 changed effect scheduling — toObservable (used by localeChanges) requires
+    // explicit effect flushing in tests; tick() alone no longer flushes pending effects.
+    TestBed.flushEffects();
 
     translatedMessage = pipe.transform(key, { name });
     tick(100);
