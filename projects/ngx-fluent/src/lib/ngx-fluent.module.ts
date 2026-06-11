@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { NgxFluentPipe } from './ngx-fluent.pipe';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 @NgModule({
   imports: [NgxFluentPipe],
   exports: [NgxFluentPipe],
-  providers: [provideHttpClient(withInterceptorsFromDi())],
+  providers: [provideHttpClient(withXhr(), withInterceptorsFromDi())],
 })
 export class NgxFluentModule {}

@@ -16,12 +16,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 | >= 19.0               | 19.x    |
 | >= 20.0               | 20.x    |
 | >= 21.0               | 21.x    |
+| >= 22.0               | 22.x    |
 
 No changelog was recorded for versions prior to 19.0.0.
 
 ---
 
 ## [Unreleased]
+
+## [22.0.0] — 2026-06-12
+
+### Added
+
+- **`@Service()` on `NgxFluentService`** — replaces `@Injectable({ providedIn: 'root' })` with Angular 22's new shorthand decorator. Semantically identical; requires `inject()` for dependencies (already the case since v19). This is a non-breaking change.
+
+### Changed
+
+- **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^22.0.0`.
+- **`angular-eslint`:** updated to `^22.0.0`.
+- **TypeScript:** `~5.9.2` → `~6.0.3`. `baseUrl` is deprecated in TypeScript 6 (planned removal in TS 7); `"ignoreDeprecations": "6.0"` added to root `tsconfig.json` to preserve the workspace path-mapping behavior until migration is needed.
+- **`@angular/build` / `@angular/cli`:** bumped to `^22.0.1`. `ng-packagr` → `^22.0.0`.
+- **HttpClient now defaults to Fetch backend.** `withXhr()` added to all `provideHttpClient()` calls (`NgxFluentModule`, standalone example `app.config.ts`) by the `ng update` migration schematic to retain XHR behavior.
+- **OnPush is the new Angular 22 default** for components that omit `changeDetection`. Migration schematic auto-added `ChangeDetectionStrategy.Eager` (the old Default, renamed for clarity) to both example components to preserve prior behavior. The standalone example then replaces `Eager` with explicit `OnPush` — see below.
+- **`provideBrowserGlobalErrorListeners()` and `provideZoneChangeDetection({ eventCoalescing: true })`** added to the standalone example's `app.config.ts` by the migration schematic.
+
+### Standalone example (`ngx-fluent-example-standalone`)
+
+- **Signal-based name field.** `name` is now a `signal<string>('John Doe')` instead of a plain class property. `FormsModule` and `[(ngModel)]` removed; the input uses `[value]="name()" (input)="updateName($event)"` instead. This keeps all component state in Angular's reactive graph.
+- **Explicit `OnPush`.** The migration schematic added `Eager`; this was immediately changed to `ChangeDetectionStrategy.OnPush` because the component is fully signal-driven and `Eager` would be a regression.
+- **Signal Forms note** added as a comment in the component: `@angular/forms/signals` is stable in Angular 22 and is the right choice for forms that require validation. For this one-field, no-validation example a plain signal is sufficient.
+
+### Legacy example (`ngx-fluent-example`)
+
+- `ChangeDetectionStrategy.Eager` added by migration (equivalent to the old `Default`). Comment explains why it is kept: zone-based CD + mutable class properties require it.
 
 ## [21.0.0] — 2026-06-12
 

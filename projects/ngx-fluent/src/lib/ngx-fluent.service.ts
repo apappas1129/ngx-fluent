@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Service, Signal, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { map, catchError, of } from 'rxjs';
 import { FluentBundle, FluentResource } from '@fluent/bundle';
 
 import type { TranslationSourceConfig, TranslationSourceMap } from './types';
 
-@Injectable({
-  providedIn: 'root',
-})
+// @Service() is Angular 22's shorthand for @Injectable({ providedIn: 'root' }).
+// It requires inject() for dependencies (no constructor injection) — already satisfied here.
+@Service()
 export class NgxFluentService {
   private readonly _locale = signal<string | null>(null);
   private readonly _bundle = signal<FluentBundle | null>(null);

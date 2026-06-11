@@ -1,19 +1,36 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NgxFluentPipe, NgxFluentService } from '@zeferinix/ngx-fluent';
 
+// OnPush is now the Angular 22 default for new components — stated explicitly here for clarity.
+// All state is signal-based so Angular's reactive graph drives targeted re-renders without zone.js
+// dirty-checking the entire tree.
+//
+// For forms with validation, Angular 22 ships stable Signal Forms (@angular/forms/signals):
+//
+//   import { form, required } from '@angular/forms/signals';
+//   const nameModel = signal({ name: 'John Doe' });
+//   readonly nameForm = form(nameModel, f => {
+//     required(f.name, { message: 'Name is required' });
+//   });
+//
+// Our name field has no validation, so a plain signal + native input binding is sufficient.
 @Component({
   selector: 'app-root',
-  imports: [NgxFluentPipe, FormsModule],
+  imports: [NgxFluentPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
 export class App {
   private readonly fluentService = inject(NgxFluentService);
 
-  name = 'John Doe';
+  readonly name = signal('John Doe');
 
   get currentLocale() {
     return this.fluentService.currentLocale;
+  }
+
+  updateName(event: Event) {
+    this.name.set((event.target as HTMLInputElement).value);
   }
 
   cycleLocale() {
