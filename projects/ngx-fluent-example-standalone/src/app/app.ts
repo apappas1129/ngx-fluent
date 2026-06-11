@@ -6,7 +6,6 @@ import { NgxFluentPipe, NgxFluentService } from '@zeferinix/ngx-fluent';
   selector: 'app-root',
   imports: [NgxFluentPipe, FormsModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
 })
 export class App {
   private readonly fluentService = inject(NgxFluentService);

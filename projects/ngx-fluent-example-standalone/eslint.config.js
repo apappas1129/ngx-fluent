@@ -28,6 +28,9 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
+      // Angular 20's generator no longer appends "Component" to the root class name (App, not AppComponent).
+      // The suffix requirement is a carry-over from older style guides and is disabled here to match current Angular conventions.
+      "@angular-eslint/component-class-suffix": "off",
     },
   },
   {
