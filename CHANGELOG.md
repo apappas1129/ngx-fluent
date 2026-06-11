@@ -33,11 +33,25 @@ No changelog was recorded for versions prior to 19.0.0.
 - **TypeScript:** `~5.8.3` → `~5.9.2`.
 - **jasmine-core:** `~5.6.0` → `~5.9.0`.
 - **`NgxFluentService.translate()`** is now **synchronous** (`string | null` instead of `Promise<string | null>`). The service stores the active `FluentBundle` in a signal; `translate()` reads it directly so Fluent's `formatPattern()` runs inline with no async overhead. The only async operation remains the initial HTTP fetch in `setLocale()`.
-- **`NgxFluentPipe`** internals simplified: the subscription to `localeChanges`, all async callbacks, and manual key/args tracking are removed. `transform()` now calls `translate()` directly — the LView reactive node registers a dependency on the internal bundle signal through that call, so locale switches still trigger targeted re-renders. The `pure: false` constraint is retained (see v19 Future plans note for the reason).
+- **`NgxFluentPipe`** internals simplified: the subscription to `localeChanges`, all async callbacks, and manual key/args tracking are removed. `transform()` now calls `translate()` directly — the LView reactive node registers a dependency on the internal bundle signal through that call, so locale switches still trigger targeted re-renders. `pure: false` is retained; see the Future plans section below for why this constraint cannot be lifted by the library alone.
 
 ### Breaking changes
 
 - **`NgxFluentService.translate(key, args)`** return type changed from `Promise<string | null>` to `string | null`. Callers who used `await fluentService.translate(...)` or chained `.then()` must be updated to call it synchronously. Template usage via the `fluent` pipe is unaffected.
+
+### Future plans
+
+`NgxFluentPipe` must remain `pure: false` indefinitely — **this is a constraint imposed by Angular, not a library design choice**, and it cannot be lifted without a change to Angular itself.
+
+Here is why. A pure pipe is memoized by input reference: when `key` and `args` have not changed since the last render, Angular skips calling `transform()` entirely and returns the cached result. This memoization check runs *before* `transform()` is entered — so if inputs are unchanged, `translate()` is never called, the bundle signal inside is never read, and the component's LView reactive node never re-registers its dependency on that signal. The next locale switch will still trigger one re-render (from the dependency registered in the previous cycle), but that render returns the stale cached value and re-registers nothing, breaking all subsequent updates.
+
+The only way to eliminate `pure: false` without changing the template API would be for Angular to track signal reads that occur *inside* pipe transform calls and invalidate the memoization when those signals change — the same way an `OnPush` component is marked for check when a signal it reads changes. This is an open discussion in the Angular repository:
+
+- [**#56401** — Mark pure pipes dirty when a signal that they read changes](https://github.com/angular/angular/issues/56401)
+- [**#56407** — Signal Pipes](https://github.com/angular/angular/issues/56407)
+- [**#61501** — Pipes in a signal world — Template defined computed](https://github.com/angular/angular/issues/61501)
+
+Once Angular resolves this, `NgxFluentPipe` can drop `pure: false` with no public API change — `transform()` and template syntax remain identical. This library will adopt that as soon as the Angular version that ships the fix becomes the minimum peer dependency.
 
 ## [19.0.0] — 2026-06-12
 
@@ -54,10 +68,10 @@ No changelog was recorded for versions prior to 19.0.0.
 - **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^19.0.0`.
 - **tsconfig:** aligned with Angular 19 defaults — `moduleResolution: "bundler"`, `module: "ES2022"`, removed obsolete `useDefineForClassFields: false`.
 
-### Future plans
+### Future plans (at time of v19 release)
 
 `NgxFluentPipe` must remain `pure: false` in v19. Pure pipes are memoized by input reference — if `key` and `args` have not changed Angular skips calling `transform()` entirely, which means the signal is never read, and the component view never registers as a reactive consumer. `pure: false` ensures `transform()` always runs so the dependency is re-registered each render cycle.
 
-A future version is planned where `NgxFluentService.translate()` becomes **synchronous**, reading from a signal-stored `FluentBundle` rather than resolving a `Promise` (the HTTP fetch is the only async part; Fluent's `formatPattern()` is itself synchronous). This will allow `transform()` to read the bundle signal directly, making the component view a reactive consumer of locale changes without needing `pure: false`.
+A future version was planned where `NgxFluentService.translate()` becomes **synchronous** — delivered in v20. Template syntax is unchanged; the only breaking change for callers is the return type: `Promise<string | null>` → `string | null`.
 
-**Template syntax will not change** — `{{ 'key' | fluent: args }}` remains valid. The only breaking change will be for consumers who call `translate()` directly on the service: the return type changes from `Promise<string>` to `string`.
+> **Correction (added in v20):** the original note predicted that synchronous `translate()` would allow removing `pure: false`. That was incorrect. Even with a synchronous `translate()` that reads a bundle signal, Angular's pure pipe memoization still skips `transform()` when inputs are unchanged — so the signal dependency is never re-registered and locale switches eventually stop triggering re-renders. See the v20 Future plans section for the full explanation and the upstream Angular issues tracking a permanent fix.
