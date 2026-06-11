@@ -62,7 +62,7 @@
             },
             "index": "projects/ngx-fluent-example/src/index.html",
             "polyfills": [
-              "projects/ngx-fluent-example/src/polyfills.ts"
+              "zone.js"
             ],
             "tsConfig": "projects/ngx-fluent-example/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -81,19 +81,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "projects/ngx-fluent-example/src/environments/environment.ts",
-                  "with": "projects/ngx-fluent-example/src/environments/environment.prod.ts"
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
                 }
               ],
               "outputHashing": "all"
@@ -128,8 +122,10 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ngx-fluent-example/src/test.ts",
-            "polyfills": "projects/ngx-fluent-example/src/polyfills.ts",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "projects/ngx-fluent-example/tsconfig.spec.json",
             "karmaConfig": "projects/ngx-fluent-example/karma.conf.js",
             "inlineStyleLanguage": "scss",
