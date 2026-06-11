@@ -6,8 +6,9 @@ import { NgxFluentService } from './ngx-fluent.service';
 import { isEqual } from 'lodash-es';
 
 @Pipe({
-  name: 'fluent',
-  pure: false,
+    name: 'fluent',
+    pure: false,
+    standalone: false
 })
 export class NgxFluentPipe implements PipeTransform {
   value: string | null = null;
