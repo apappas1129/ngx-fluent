@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, catchError, of, lastValueFrom } from 'rxjs';
+import { Injectable, Signal, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { map, catchError, of, lastValueFrom } from 'rxjs';
 import { FluentBundle, FluentResource } from '@fluent/bundle';
 
 import type { TranslationSourceConfig, TranslationSourceMap } from './types';
@@ -11,7 +12,8 @@ import type { TranslationSourceConfig, TranslationSourceMap } from './types';
   providedIn: 'root',
 })
 export class NgxFluentService {
-  private locale = new BehaviorSubject<string | null>(null);
+  private readonly _locale = signal<string | null>(null);
+  private readonly http = inject(HttpClient);
 
   /**
    * Used to store unloaded source map entries since translations are lazy-loaded.
@@ -23,9 +25,8 @@ export class NgxFluentService {
    */
   private translationsMap: Record<string, FluentBundle> = {};
 
-  localeChanges = this.locale.asObservable();
-
-  constructor(private http: HttpClient) {}
+  readonly locale: Signal<string | null> = this._locale.asReadonly();
+  readonly localeChanges = toObservable(this._locale);
 
   /** This method should only be called after a bundle has been loaded. */
   private clearTranslationSourceMapEntry(locale: string) {
@@ -82,14 +83,14 @@ export class NgxFluentService {
   }
 
   get currentLocale() {
-    return this.locale.value;
+    return this._locale();
   }
 
   setLocale(locale: string): void {
     this.fetchTranslation(locale)
       .pipe(catchError(() => locale))
       .subscribe(() => {
-        this.locale.next(locale);
+        this._locale.set(locale);
       });
   }
 
