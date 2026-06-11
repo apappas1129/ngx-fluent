@@ -17,6 +17,12 @@ export class App {
   }
 
   cycleLocale() {
-    this.fluentService.setLocale(this.currentLocale === 'en' ? 'sv' : 'en');
+    if (this.currentLocale === 'en') {
+      this.fluentService.setLocale('sv');
+    } else if (this.currentLocale === 'sv') {
+      this.fluentService.setLocale('invalid');
+    } else {
+      this.fluentService.setLocale('en');
+    }
   }
 }
