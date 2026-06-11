@@ -1,5 +1,4 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectorRef } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 
@@ -26,7 +25,6 @@ describe('NgxFluentPipe', () => {
 
   beforeEach(() => {
     const _httpSpy = jasmine.createSpyObj('HttpClient', ['get', 'pipe']);
-    const _cdrSpy = jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']);
     TestBed.configureTestingModule({
       providers: [
         NgxFluentPipe,
@@ -34,10 +32,6 @@ describe('NgxFluentPipe', () => {
         {
           provide: HttpClient,
           useValue: _httpSpy,
-        },
-        {
-          provide: ChangeDetectorRef,
-          useValue: _cdrSpy,
         },
       ],
     });
