@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgxFluentPipe, NgxFluentService } from '@zeferinix/ngx-fluent';
 
-// OnPush is now the Angular 22 default for new components — stated explicitly here for clarity.
-// All state is signal-based so Angular's reactive graph drives targeted re-renders without zone.js
-// dirty-checking the entire tree.
+// Angular 22: OnPush is the default change detection strategy for new components.
+// All state here is signal-based so Angular's reactive graph drives re-renders without
+// zone.js dirty-checking the entire tree.
 //
 // For forms with validation, Angular 22 ships stable Signal Forms (@angular/forms/signals):
 //
@@ -17,7 +17,6 @@ import { NgxFluentPipe, NgxFluentService } from '@zeferinix/ngx-fluent';
 @Component({
   selector: 'app-root',
   imports: [NgxFluentPipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html',
 })
 export class App {
