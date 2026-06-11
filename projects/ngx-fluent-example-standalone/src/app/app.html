@@ -1,0 +1,7 @@
+<button (click)="cycleLocale()">Cycle Locale</button>
+
+<h1>Current Locale: {{ currentLocale }}</h1>
+
+<input type="text" placeholder="Name" [(ngModel)]="name" />
+
+<h2>{{ 'hello' | fluent: { name } }}</h2>

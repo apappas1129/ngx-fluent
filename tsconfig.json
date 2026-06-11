@@ -30,5 +30,13 @@
     "strictInputAccessModifiers": true,
     "typeCheckHostBindings": true,
     "strictTemplates": true
-  }
+  },
+  "references": [
+    {
+      "path": "./projects/ngx-fluent-example-standalone/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/ngx-fluent-example-standalone/tsconfig.spec.json"
+    }
+  ]
 }

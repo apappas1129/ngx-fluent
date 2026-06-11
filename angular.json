@@ -27,7 +27,10 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "projects/ngx-fluent/tsconfig.spec.json",
             "karmaConfig": "projects/ngx-fluent/karma.conf.js"
           }
@@ -35,7 +38,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/ngx-fluent/**/*.ts", "projects/ngx-fluent/**/*.html"]
+            "lintFilePatterns": [
+              "projects/ngx-fluent/**/*.ts",
+              "projects/ngx-fluent/**/*.html"
+            ]
           }
         }
       }
@@ -58,11 +64,18 @@
               "base": "dist/ngx-fluent-example"
             },
             "index": "projects/ngx-fluent-example/src/index.html",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/ngx-fluent-example/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["projects/ngx-fluent-example/src/favicon.ico", "projects/ngx-fluent-example/src/assets"],
-            "styles": ["projects/ngx-fluent-example/src/styles.scss"],
+            "assets": [
+              "projects/ngx-fluent-example/src/favicon.ico",
+              "projects/ngx-fluent-example/src/assets"
+            ],
+            "styles": [
+              "projects/ngx-fluent-example/src/styles.scss"
+            ],
             "scripts": [],
             "browser": "projects/ngx-fluent-example/src/main.ts"
           },
@@ -112,26 +125,140 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
             "tsConfig": "projects/ngx-fluent-example/tsconfig.spec.json",
             "karmaConfig": "projects/ngx-fluent-example/karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": ["projects/ngx-fluent-example/src/favicon.ico", "projects/ngx-fluent-example/src/assets"],
-            "styles": ["projects/ngx-fluent-example/src/styles.scss"],
+            "assets": [
+              "projects/ngx-fluent-example/src/favicon.ico",
+              "projects/ngx-fluent-example/src/assets"
+            ],
+            "styles": [
+              "projects/ngx-fluent-example/src/styles.scss"
+            ],
             "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["projects/ngx-fluent-example/**/*.ts", "projects/ngx-fluent-example/**/*.html"]
+            "lintFilePatterns": [
+              "projects/ngx-fluent-example/**/*.ts",
+              "projects/ngx-fluent-example/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "ngx-fluent-example-standalone": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/ngx-fluent-example-standalone",
+      "sourceRoot": "projects/ngx-fluent-example-standalone/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/ngx-fluent-example-standalone/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/ngx-fluent-example-standalone/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/ngx-fluent-example-standalone/public"
+              }
+            ],
+            "styles": [
+              "projects/ngx-fluent-example-standalone/src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "ngx-fluent-example-standalone:build:production"
+            },
+            "development": {
+              "buildTarget": "ngx-fluent-example-standalone:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/ngx-fluent-example-standalone/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/ngx-fluent-example-standalone/public"
+              }
+            ],
+            "styles": [
+              "projects/ngx-fluent-example-standalone/src/styles.scss"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngx-fluent-example-standalone/**/*.ts",
+              "projects/ngx-fluent-example-standalone/**/*.html"
+            ],
+            "eslintConfig": "projects/ngx-fluent-example-standalone/eslint.config.js"
           }
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": ["@angular-eslint/schematics"],
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
     "analytics": "b1dda13a-4bac-452d-bc32-05f3dc30866b"
   },
   "schematics": {

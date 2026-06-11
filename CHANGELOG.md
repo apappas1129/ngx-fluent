@@ -24,6 +24,36 @@ No changelog was recorded for versions prior to 19.0.0.
 
 ## [20.0.0] — 2026-06-12
 
+### Added
+
+- **`provideNgxFluent(config)`** — a new provider function for Angular standalone applications. Add it to the `providers` array of your `ApplicationConfig` alongside `provideHttpClient()`:
+
+  ```ts
+  export const appConfig: ApplicationConfig = {
+    providers: [
+      provideHttpClient(),
+      provideNgxFluent({
+        sources: {
+          en: 'assets/i18n/en.ftl',
+          sv: { path: 'assets/i18n/sv.ftl', bundleConfig: { useIsolating: false } },
+        },
+        defaultLocale: 'en',
+      }),
+    ],
+  };
+  ```
+
+  The `sources` field accepts the same values as `setTranslationSourceMap()` — a URL string, a `{ path, bundleConfig }` object, or a pre-built `FluentBundle` instance. All three variants work per locale entry.
+
+  **`defaultLocale` and bootstrap timing:** when `defaultLocale` is specified, `provideNgxFluent` hooks into Angular's application initializer phase and fetches that locale's translation file *before the root component renders*. This eliminates the flash of untranslated keys that occurs when initialization is done inside `ngOnInit` — by the time your template is evaluated for the first time, the bundle is already loaded.
+
+  When `defaultLocale` is omitted, the sources are registered but no locale is activated at startup. Set the locale dynamically at runtime instead (e.g. from user preferences stored in `localStorage`).
+
+  **`provideHttpClient()` is a prerequisite.** `ngx-fluent` intentionally does not call `provideHttpClient()` internally so your application retains full control over fetch configuration and interceptors.
+
+- **`NgxFluentConfig`** interface — exported as part of the public API for consumers who want to type their config object explicitly.
+- **Standalone example app** (`ngx-fluent-example-standalone`) — a second example project demonstrating the modern standalone bootstrap pattern with `provideNgxFluent()`. The original NgModule-based example (`ngx-fluent-example`) is preserved for consumers who have not yet migrated to standalone bootstrap.
+
 ### Changed
 
 - **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^20.0.0`.
@@ -33,6 +63,7 @@ No changelog was recorded for versions prior to 19.0.0.
 - **TypeScript:** `~5.8.3` → `~5.9.2`.
 - **jasmine-core:** `~5.6.0` → `~5.9.0`.
 - **`NgxFluentService.translate()`** is now **synchronous** (`string | null` instead of `Promise<string | null>`). The service stores the active `FluentBundle` in a signal; `translate()` reads it directly so Fluent's `formatPattern()` runs inline with no async overhead. The only async operation remains the initial HTTP fetch in `setLocale()`.
+- **`NgxFluentService.setLocale()`** now returns `Promise<void>` instead of `void`. The promise resolves once the locale's translation file is fetched and the bundle signal is updated. Existing callers that ignore the return value are unaffected.
 - **`NgxFluentPipe`** internals simplified: the subscription to `localeChanges`, all async callbacks, and manual key/args tracking are removed. `transform()` now calls `translate()` directly — the LView reactive node registers a dependency on the internal bundle signal through that call, so locale switches still trigger targeted re-renders. `pure: false` is retained; see the Future plans section below for why this constraint cannot be lifted by the library alone.
 
 ### Breaking changes

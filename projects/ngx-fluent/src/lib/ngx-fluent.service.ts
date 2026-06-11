@@ -87,13 +87,16 @@ export class NgxFluentService {
     return this._locale();
   }
 
-  setLocale(locale: string): void {
-    this.fetchTranslation(locale)
-      .pipe(catchError(() => of(null)))
-      .subscribe((bundle) => {
-        this._bundle.set(bundle);
-        this._locale.set(locale);
-      });
+  setLocale(locale: string): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.fetchTranslation(locale)
+        .pipe(catchError(() => of(null)))
+        .subscribe((bundle) => {
+          this._bundle.set(bundle);
+          this._locale.set(locale);
+          resolve();
+        });
+    });
   }
 
   /**

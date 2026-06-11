@@ -1,0 +1,1 @@
+hello = Hallå {$name}
