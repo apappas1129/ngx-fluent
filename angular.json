@@ -25,14 +25,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/ngx-fluent/tsconfig.spec.json",
-            "karmaConfig": "projects/ngx-fluent/karma.conf.js"
+            "tsConfig": "projects/ngx-fluent/tsconfig.spec.json"
           }
         },
         "lint": {
@@ -123,23 +118,9 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/ngx-fluent-example/tsconfig.spec.json",
-            "karmaConfig": "projects/ngx-fluent-example/karma.conf.js",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/ngx-fluent-example/src/favicon.ico",
-              "projects/ngx-fluent-example/src/assets"
-            ],
-            "styles": [
-              "projects/ngx-fluent-example/src/styles.scss"
-            ],
-            "scripts": []
+            "tsConfig": "projects/ngx-fluent-example/tsconfig.spec.json"
           }
         },
         "lint": {
@@ -223,23 +204,9 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/ngx-fluent-example-standalone/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/ngx-fluent-example-standalone/public"
-              }
-            ],
-            "styles": [
-              "projects/ngx-fluent-example-standalone/src/styles.scss"
-            ]
+            "tsConfig": "projects/ngx-fluent-example-standalone/tsconfig.spec.json"
           }
         },
         "lint": {

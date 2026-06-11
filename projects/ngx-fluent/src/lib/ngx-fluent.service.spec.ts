@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { FluentBundle, FluentResource } from '@fluent/bundle';
+import { vi, type Mock } from 'vitest';
 import { of } from 'rxjs';
 
 import { NgxFluentService } from './ngx-fluent.service';
 
 describe('NgxFluentService', () => {
   let fluentService: NgxFluentService;
-  let httpSpy: jasmine.SpyObj<HttpClient>;
+  let httpSpy: { get: Mock; pipe: Mock };
 
   const commonLocale = 'en';
   const commonKey = 'test-key';
@@ -15,14 +16,14 @@ describe('NgxFluentService', () => {
   const commonTranslation = `${commonKey} = ${commonValue}`;
 
   beforeEach(() => {
-    const _httpSpy = jasmine.createSpyObj('HttpClient', ['get', 'pipe']);
+    const _httpSpy = { get: vi.fn(), pipe: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [NgxFluentService, { provide: HttpClient, useValue: _httpSpy }],
     });
 
-    httpSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
-    httpSpy.get.and.returnValue(of(''));
+    httpSpy = TestBed.inject(HttpClient) as unknown as { get: Mock; pipe: Mock };
+    httpSpy.get.mockReturnValue(of(''));
 
     fluentService = TestBed.inject(NgxFluentService);
   });
@@ -53,7 +54,7 @@ describe('NgxFluentService', () => {
     });
 
     it('resolved locale and message returns translation', () => {
-      httpSpy.get.and.returnValue(of(commonTranslation));
+      httpSpy.get.mockReturnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
       const result = fluentService.translate(commonKey);
@@ -63,7 +64,7 @@ describe('NgxFluentService', () => {
     it('resolved locale and unresolved message returns null', () => {
       const unknownKey = 'unknown-key';
 
-      httpSpy.get.and.returnValue(of(commonTranslation));
+      httpSpy.get.mockReturnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
       const result = fluentService.translate(unknownKey);
@@ -79,7 +80,7 @@ describe('NgxFluentService', () => {
     });
 
     it('should reload the existing locale translations if setSourceTranslationMap receives a previously loaded locale', () => {
-      httpSpy.get.and.returnValue(of(commonTranslation));
+      httpSpy.get.mockReturnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
       expect(fluentService.translate(commonKey)).toBe(commonValue);

@@ -15,12 +15,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 | >= 4.0                | 18.x    |
 | >= 19.0               | 19.x    |
 | >= 20.0               | 20.x    |
+| >= 21.0               | 21.x    |
 
 No changelog was recorded for versions prior to 19.0.0.
 
 ---
 
 ## [Unreleased]
+
+## [21.0.0] — 2026-06-12
+
+### Changed
+
+- **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^21.0.0`.
+- **Testing infrastructure:** Karma + Jasmine replaced with **Vitest 4.x + jsdom 28.x** across all three projects (library and both example apps). This is the default for new Angular 21 projects. The `@angular/build:unit-test` builder replaces `@angular/build:karma`; all three `angular.json` test targets updated accordingly. `karma.conf.js` files and the Karma-specific `test.ts` entry point are removed. Spec files migrated from Jasmine spy API (`jasmine.createSpyObj`, `.and.returnValue`) to Vitest spy API (`vi.fn()`, `.mockReturnValue()`). The `fakeAsync` wrapper is also removed from pipe tests — it was never needed after `translate()` became synchronous in v20.
+- **`angular-eslint`:** updated from `20.7.0` to `21.4.0`.
+- **`@angular/core` bootstrap migration:** `platformBrowserDynamic().bootstrapModule()` in the legacy NgModule example now passes `{ applicationProviders: [provideZoneChangeDetection()] }` as a second argument, as applied by the Angular 21 migration schematic.
+- **TypeScript:** remains `~5.9.2` (no change from v20).
 
 ## [20.0.0] — 2026-06-12
 

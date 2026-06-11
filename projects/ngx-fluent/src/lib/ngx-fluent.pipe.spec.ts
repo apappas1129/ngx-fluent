@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { fakeAsync, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { vi, type Mock } from 'vitest';
 import { of } from 'rxjs';
 
 import { NgxFluentPipe } from './ngx-fluent.pipe';
@@ -8,7 +9,7 @@ import { NgxFluentService } from './ngx-fluent.service';
 describe('NgxFluentPipe', () => {
   let pipe: NgxFluentPipe;
   let fluentService: NgxFluentService;
-  let httpSpy: jasmine.SpyObj<HttpClient>;
+  let httpSpy: { get: Mock; pipe: Mock };
 
   const key = 'hello';
   const translations = {
@@ -24,7 +25,7 @@ describe('NgxFluentPipe', () => {
   }
 
   beforeEach(() => {
-    const _httpSpy = jasmine.createSpyObj('HttpClient', ['get', 'pipe']);
+    const _httpSpy = { get: vi.fn(), pipe: vi.fn() };
     TestBed.configureTestingModule({
       providers: [
         NgxFluentPipe,
@@ -43,33 +44,33 @@ describe('NgxFluentPipe', () => {
       sv: 'assets/locales/sv.ftl',
     });
 
-    httpSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
+    httpSpy = TestBed.inject(HttpClient) as unknown as { get: Mock; pipe: Mock };
   });
 
-  it(`transforms "${key}" key from one language`, fakeAsync(() => {
-    httpSpy.get.and.returnValue(of(translations.en));
+  it(`transforms "${key}" key from one language`, () => {
+    httpSpy.get.mockReturnValue(of(translations.en));
     fluentService.setLocale('en');
 
     const name = 'John Doe';
     const translatedMessage = pipe.transform(key, { name });
     expect(translatedMessage).toBe(`Hello ${applyIsolation(name)}`);
-  }));
+  });
 
-  it(`transforms "${key}" key from one language to another`, fakeAsync(() => {
-    httpSpy.get.and.returnValue(of(translations.en));
+  it(`transforms "${key}" key from one language to another`, () => {
+    httpSpy.get.mockReturnValue(of(translations.en));
     fluentService.setLocale('en');
 
     const name = 'John Doe';
     expect(pipe.transform(key, { name })).toBe(`Hello ${applyIsolation(name)}`);
 
-    httpSpy.get.and.returnValue(of(translations.sv));
+    httpSpy.get.mockReturnValue(of(translations.sv));
     fluentService.setLocale('sv');
 
     expect(pipe.transform(key, { name })).toBe(`Hallå ${applyIsolation(name)}`);
-  }));
+  });
 
-  it(`args should be reactive`, fakeAsync(() => {
-    httpSpy.get.and.returnValue(of(translations.en));
+  it(`args should be reactive`, () => {
+    httpSpy.get.mockReturnValue(of(translations.en));
     fluentService.setLocale('en');
 
     let name = 'John Doe';
@@ -77,5 +78,5 @@ describe('NgxFluentPipe', () => {
 
     name = 'Billy';
     expect(pipe.transform(key, { name })).toBe(`Hello ${applyIsolation(name)}`);
-  }));
+  });
 });
