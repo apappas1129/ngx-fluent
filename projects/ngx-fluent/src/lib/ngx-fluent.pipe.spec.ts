@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { fakeAsync, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { NgxFluentPipe } from './ngx-fluent.pipe';
@@ -51,11 +51,7 @@ describe('NgxFluentPipe', () => {
     fluentService.setLocale('en');
 
     const name = 'John Doe';
-
-    let translatedMessage = pipe.transform(key, { name });
-    tick(100);
-    translatedMessage = pipe.transform(key, { name });
-
+    const translatedMessage = pipe.transform(key, { name });
     expect(translatedMessage).toBe(`Hello ${applyIsolation(name)}`);
   }));
 
@@ -64,22 +60,12 @@ describe('NgxFluentPipe', () => {
     fluentService.setLocale('en');
 
     const name = 'John Doe';
-
-    let translatedMessage = pipe.transform(key, { name });
-    tick(100);
-    translatedMessage = pipe.transform(key, { name });
-    expect(translatedMessage).toBe(`Hello ${applyIsolation(name)}`);
+    expect(pipe.transform(key, { name })).toBe(`Hello ${applyIsolation(name)}`);
 
     httpSpy.get.and.returnValue(of(translations.sv));
     fluentService.setLocale('sv');
-    // Angular 20 changed effect scheduling — toObservable (used by localeChanges) requires
-    // explicit effect flushing in tests; tick() alone no longer flushes pending effects.
-    TestBed.flushEffects();
 
-    translatedMessage = pipe.transform(key, { name });
-    tick(100);
-    translatedMessage = pipe.transform(key, { name });
-    expect(translatedMessage).toBe(`Hallå ${applyIsolation(name)}`);
+    expect(pipe.transform(key, { name })).toBe(`Hallå ${applyIsolation(name)}`);
   }));
 
   it(`args should be reactive`, fakeAsync(() => {
@@ -87,17 +73,9 @@ describe('NgxFluentPipe', () => {
     fluentService.setLocale('en');
 
     let name = 'John Doe';
-
-    let translatedMessage = pipe.transform(key, { name });
-    tick(100);
-    translatedMessage = pipe.transform(key, { name });
-    expect(translatedMessage).toBe(`Hello ${applyIsolation(name)}`);
+    expect(pipe.transform(key, { name })).toBe(`Hello ${applyIsolation(name)}`);
 
     name = 'Billy';
-
-    translatedMessage = pipe.transform(key, { name });
-    tick(100);
-    translatedMessage = pipe.transform(key, { name });
-    expect(translatedMessage).toBe(`Hello ${applyIsolation(name)}`);
+    expect(pipe.transform(key, { name })).toBe(`Hello ${applyIsolation(name)}`);
   }));
 });

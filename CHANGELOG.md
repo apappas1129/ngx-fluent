@@ -32,10 +32,12 @@ No changelog was recorded for versions prior to 19.0.0.
 - **tsconfig:** `module` changed from `"ES2022"` to `"preserve"` (TypeScript automatically infers `moduleResolution: bundler`; the explicit `moduleResolution` field is removed). Added `typeCheckHostBindings: true` to `angularCompilerOptions`.
 - **TypeScript:** `~5.8.3` → `~5.9.2`.
 - **jasmine-core:** `~5.6.0` → `~5.9.0`.
+- **`NgxFluentService.translate()`** is now **synchronous** (`string | null` instead of `Promise<string | null>`). The service stores the active `FluentBundle` in a signal; `translate()` reads it directly so Fluent's `formatPattern()` runs inline with no async overhead. The only async operation remains the initial HTTP fetch in `setLocale()`.
+- **`NgxFluentPipe`** internals simplified: the subscription to `localeChanges`, all async callbacks, and manual key/args tracking are removed. `transform()` now calls `translate()` directly — the LView reactive node registers a dependency on the internal bundle signal through that call, so locale switches still trigger targeted re-renders. The `pure: false` constraint is retained (see v19 Future plans note for the reason).
 
-### Migration notes
+### Breaking changes
 
-**Testing with `localeChanges`:** Angular 20 changed how effects are scheduled. `NgxFluentService.localeChanges` is backed by `toObservable(signal)`, which uses Angular's effect system internally. In `fakeAsync` tests, `tick()` no longer flushes pending effects — you must call `TestBed.flushEffects()` after any `setLocale()` call before asserting the updated translation value. This applies to any consumer test that exercises locale switching.
+- **`NgxFluentService.translate(key, args)`** return type changed from `Promise<string | null>` to `string | null`. Callers who used `await fluentService.translate(...)` or chained `.then()` must be updated to call it synchronously. Template usage via the `fluent` pipe is unaffected.
 
 ## [19.0.0] — 2026-06-12
 

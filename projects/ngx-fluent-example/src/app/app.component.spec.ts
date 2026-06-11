@@ -10,7 +10,8 @@ describe('AppComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent, NgxFluentPipe],
+      declarations: [AppComponent],
+      imports: [NgxFluentPipe],
       providers: [NgxFluentService, provideHttpClient()],
     }).compileComponents();
   }));

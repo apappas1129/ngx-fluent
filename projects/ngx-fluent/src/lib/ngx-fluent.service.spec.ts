@@ -45,28 +45,28 @@ describe('NgxFluentService', () => {
       expect(fluentService.currentLocale).toBe(commonLocale);
     });
 
-    it('unresolved locale returns null', async () => {
+    it('unresolved locale returns null', () => {
       fluentService.setLocale('non-existent');
 
-      const result = await fluentService.translate(commonKey);
+      const result = fluentService.translate(commonKey);
       expect(result).toBeNull();
     });
 
-    it('resolved locale and message returns translation', async () => {
+    it('resolved locale and message returns translation', () => {
       httpSpy.get.and.returnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
-      const result = await fluentService.translate(commonKey);
+      const result = fluentService.translate(commonKey);
       expect(result).toBe(commonValue);
     });
 
-    it('resolved locale and unresolved message returns null', async () => {
+    it('resolved locale and unresolved message returns null', () => {
       const unknownKey = 'unknown-key';
 
       httpSpy.get.and.returnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
-      const result = await fluentService.translate(unknownKey);
+      const result = fluentService.translate(unknownKey);
       expect(result).toBeNull();
     });
 
@@ -78,11 +78,11 @@ describe('NgxFluentService', () => {
       expect(Object.keys(fluentService['translationSourceMap'])).toEqual([]);
     });
 
-    it('should reload the existing locale translations if setSourceTranslationMap receives a previously loaded locale', async () => {
+    it('should reload the existing locale translations if setSourceTranslationMap receives a previously loaded locale', () => {
       httpSpy.get.and.returnValue(of(commonTranslation));
       fluentService.setLocale(commonLocale);
 
-      expect(await fluentService.translate(commonKey)).toBe(commonValue);
+      expect(fluentService.translate(commonKey)).toBe(commonValue);
 
       const newValue = 'new-translation';
 
@@ -94,7 +94,7 @@ describe('NgxFluentService', () => {
         [commonLocale]: bundle,
       });
 
-      expect(await fluentService.translate(commonKey)).toBe(newValue);
+      expect(fluentService.translate(commonKey)).toBe(newValue);
     });
   }
 

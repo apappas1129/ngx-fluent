@@ -3,7 +3,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Signal, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { map, catchError, of, lastValueFrom } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { FluentBundle, FluentResource } from '@fluent/bundle';
 
 import type { TranslationSourceConfig, TranslationSourceMap } from './types';
@@ -13,6 +13,7 @@ import type { TranslationSourceConfig, TranslationSourceMap } from './types';
 })
 export class NgxFluentService {
   private readonly _locale = signal<string | null>(null);
+  private readonly _bundle = signal<FluentBundle | null>(null);
   private readonly http = inject(HttpClient);
 
   /**
@@ -88,8 +89,9 @@ export class NgxFluentService {
 
   setLocale(locale: string): void {
     this.fetchTranslation(locale)
-      .pipe(catchError(() => locale))
-      .subscribe(() => {
+      .pipe(catchError(() => of(null)))
+      .subscribe((bundle) => {
+        this._bundle.set(bundle);
         this._locale.set(locale);
       });
   }
@@ -118,17 +120,16 @@ export class NgxFluentService {
     for (const locale of localesToReload) {
       this.fetchTranslation(locale)
         .pipe(catchError(() => of(null)))
-        .subscribe();
+        .subscribe((bundle) => {
+          if (locale === this._locale()) {
+            this._bundle.set(bundle);
+          }
+        });
     }
   }
 
-  async translate(key: string, args?: any): Promise<string | null> {
-    const locale = this.currentLocale;
-    if (!locale) {
-      return null;
-    }
-
-    const bundle = await lastValueFrom(this.fetchTranslation(locale)).catch(() => null);
+  translate(key: string, args?: any): string | null {
+    const bundle = this._bundle();
     if (!bundle) {
       return null;
     }
