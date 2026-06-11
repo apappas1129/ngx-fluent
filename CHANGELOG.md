@@ -14,12 +14,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 | >= 3.0                | 17.x    |
 | >= 4.0                | 18.x    |
 | >= 19.0               | 19.x    |
+| >= 20.0               | 20.x    |
 
 No changelog was recorded for versions prior to 19.0.0.
 
 ---
 
 ## [Unreleased]
+
+## [20.0.0] — 2026-06-12
+
+### Changed
+
+- **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^20.0.0`.
+- **Build system:** `@angular-devkit/build-angular` replaced by `@angular/build`. All builder references in `angular.json` updated to `@angular/build:*`.
+- **ESLint packages:** individual `@angular-eslint/*` devDependencies consolidated under the `angular-eslint` umbrella package — the umbrella manages sub-packages as its own dependencies.
+- **tsconfig:** `module` changed from `"ES2022"` to `"preserve"` (TypeScript automatically infers `moduleResolution: bundler`; the explicit `moduleResolution` field is removed). Added `typeCheckHostBindings: true` to `angularCompilerOptions`.
+- **TypeScript:** `~5.8.3` → `~5.9.2`.
+- **jasmine-core:** `~5.6.0` → `~5.9.0`.
 
 ## [19.0.0] — 2026-06-12
 
