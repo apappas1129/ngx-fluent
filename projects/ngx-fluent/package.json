@@ -11,7 +11,7 @@
   "peerDependencies": {
     "@angular/common": "^20.0.0",
     "@angular/core": "^20.0.0",
-    "@fluent/bundle": "< 1.0.0"
+    "@fluent/bundle": ">= 0.18.0 < 1.0.0"
   },
   "dependencies": {
     "tslib": "^2.6.2"
