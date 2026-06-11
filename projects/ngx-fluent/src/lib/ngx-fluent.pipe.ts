@@ -1,30 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Pipe, PipeTransform } from '@angular/core';
-import { Observable } from 'rxjs';
+import { ChangeDetectorRef, DestroyRef, Pipe, PipeTransform, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgxFluentService } from './ngx-fluent.service';
 import { isEqual } from 'lodash-es';
 
 @Pipe({
-    name: 'fluent',
-    pure: false,
-    standalone: false
+  name: 'fluent',
+  pure: false,
+  standalone: true,
 })
 export class NgxFluentPipe implements PipeTransform {
-  value: string | null = null;
+  private readonly fluentService = inject(NgxFluentService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
-  localeChanges: Observable<string | null> | null = null;
-
-  previousArgs?: any;
-
-  constructor(private readonly fluentService: NgxFluentService) {}
+  private value: string | null = null;
+  private previousArgs?: any;
+  private initialized = false;
 
   transform(key: string, args?: any) {
-    if (!this.localeChanges) {
-      this.localeChanges = this.fluentService.localeChanges;
+    if (!this.initialized) {
+      this.initialized = true;
 
-      this.localeChanges.subscribe(async () => {
+      this.fluentService.localeChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async () => {
         this.value = await this.fluentService.translate(key, this.previousArgs ?? args);
+        this.cdr.markForCheck();
       });
     }
 
@@ -33,6 +34,7 @@ export class NgxFluentPipe implements PipeTransform {
       this.previousArgs = args;
       this.fluentService.translate(key, args).then((value) => {
         this.value = value;
+        this.cdr.markForCheck();
       });
     }
 
