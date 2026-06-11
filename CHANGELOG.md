@@ -33,6 +33,10 @@ No changelog was recorded for versions prior to 19.0.0.
 - **TypeScript:** `~5.8.3` → `~5.9.2`.
 - **jasmine-core:** `~5.6.0` → `~5.9.0`.
 
+### Migration notes
+
+**Testing with `localeChanges`:** Angular 20 changed how effects are scheduled. `NgxFluentService.localeChanges` is backed by `toObservable(signal)`, which uses Angular's effect system internally. In `fakeAsync` tests, `tick()` no longer flushes pending effects — you must call `TestBed.flushEffects()` after any `setLocale()` call before asserting the updated translation value. This applies to any consumer test that exercises locale switching.
+
 ## [19.0.0] — 2026-06-12
 
 ### Changed
@@ -48,10 +52,10 @@ No changelog was recorded for versions prior to 19.0.0.
 - **Peer dependencies:** `@angular/core` and `@angular/common` bumped to `^19.0.0`.
 - **tsconfig:** aligned with Angular 19 defaults — `moduleResolution: "bundler"`, `module: "ES2022"`, removed obsolete `useDefineForClassFields: false`.
 
-### Upgrade notes for v20
+### Future plans
 
 `NgxFluentPipe` must remain `pure: false` in v19. Pure pipes are memoized by input reference — if `key` and `args` have not changed Angular skips calling `transform()` entirely, which means the signal is never read, and the component view never registers as a reactive consumer. `pure: false` ensures `transform()` always runs so the dependency is re-registered each render cycle.
 
-In v20, `NgxFluentService.translate()` is planned to become **synchronous**, reading from a signal-stored `FluentBundle` rather than resolving a `Promise` (the HTTP fetch is the only async part; Fluent's `formatPattern()` is itself synchronous). This will allow `transform()` to read the bundle signal directly, making the component view a reactive consumer of locale changes without needing `pure: false`.
+A future version is planned where `NgxFluentService.translate()` becomes **synchronous**, reading from a signal-stored `FluentBundle` rather than resolving a `Promise` (the HTTP fetch is the only async part; Fluent's `formatPattern()` is itself synchronous). This will allow `transform()` to read the bundle signal directly, making the component view a reactive consumer of locale changes without needing `pure: false`.
 
 **Template syntax will not change** — `{{ 'key' | fluent: args }}` remains valid. The only breaking change will be for consumers who call `translate()` directly on the service: the return type changes from `Promise<string>` to `string`.
