@@ -14,6 +14,9 @@
     "watch": "ng build ngx-fluent --watch --configuration development",
     "test": "ng test --browsers=Chrome",
     "test:headless": "ng test --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:lib": "ng test ngx-fluent --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:legacy": "ng test ngx-fluent-example --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:standalone": "ng test ngx-fluent-example-standalone --no-watch --no-progress --browsers=ChromeHeadless",
     "lint": "ng lint"
   },
   "dependencies": {
