@@ -25,97 +25,156 @@ Latest version available for each version of Angular
 npm install --save @fluent/bundle @zeferinix/ngx-fluent
 ```
 
-## Usage
+---
 
-### Standalone setup (recommended)
+## Setup — standalone apps (recommended)
 
-Add `provideHttpClient()` and `provideNgxFluent()` to your `ApplicationConfig`:
+For any Angular project using standalone bootstrap (`bootstrapApplication`).
+
+### 1. Register the library
+
+Add `provideHttpClient()` and `provideNgxFluent()` to your `ApplicationConfig`. Specify `defaultLocale` to have the translation file fetched **before the root component renders** — no flash of untranslated keys on first paint:
 
 ```ts
-import { ApplicationConfig } from '@angular/core';
+// app.config.ts
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideNgxFluent } from '@zeferinix/ngx-fluent';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideBrowserGlobalErrorListeners(),
     provideHttpClient(),
     provideNgxFluent({
       sources: {
-        en: 'assets/i18n/en.ftl', // could be on your assets folder
-        sv: 'https://my.domain.com/translations/sv.ftl', // or external, provided you don't get CORS issues
+        en: 'assets/i18n/en.ftl',
+        sv: 'assets/i18n/sv.ftl',
       },
-      defaultLocale: 'en', // fetched before the app renders — no flash of untranslated keys
+      defaultLocale: 'en',
     }),
   ],
 };
 ```
 
-`provideNgxFluent` hooks into Angular's application initializer phase. When `defaultLocale` is specified, the translation file is fetched **before the root component renders**, so translated content appears on first paint. Omit `defaultLocale` if you prefer to set the locale dynamically at runtime (e.g. from a user preference stored in `localStorage`).
+`provideHttpClient()` is a required prerequisite. The library uses Angular's `HttpClient` to fetch `.ftl` files but intentionally does not register it internally, so your app retains full control over interceptors and fetch configuration.
 
-`provideHttpClient()` is a prerequisite — the library uses Angular's `HttpClient` to fetch `.ftl` files but intentionally does not call `provideHttpClient()` internally so your app retains full control over interceptors and fetch configuration.
+### 2. Use the pipe
 
-Then import `NgxFluentPipe` directly in whichever standalone components use it:
+Import `NgxFluentPipe` in any standalone component that needs translations:
 
 ```ts
 import { NgxFluentPipe } from '@zeferinix/ngx-fluent';
 
 @Component({
   imports: [NgxFluentPipe],
-  // ...
+  template: `
+    <h1>{{ 'welcome-user' | fluent: { user: name } }}</h1>
+  `,
 })
-export class MyComponent {}
+export class MyComponent {
+  name = 'John Doe';
+}
 ```
 
-### NgModule setup (legacy)
+The pipe returns the key as-is if the translation cannot be resolved (locale not loaded, key missing).
 
-Import `NgxFluentModule` into your app module:
+### 3. Deferred locale init from user preference
+
+Omit `defaultLocale` if you want to decide the initial locale at runtime — for example, from a value stored in `localStorage`:
 
 ```ts
+// app.config.ts — no defaultLocale
+provideNgxFluent({
+  sources: {
+    en: 'assets/i18n/en.ftl',
+    sv: 'assets/i18n/sv.ftl',
+  },
+}),
+```
+
+```ts
+// app.ts — set locale after app starts
+export class App {
+  private fluent = inject(NgxFluentService);
+
+  constructor() {
+    const saved = localStorage.getItem('locale') ?? 'en';
+    this.fluent.setLocale(saved);
+  }
+}
+```
+
+The root component renders before the first locale loads, so untranslated keys will briefly appear. Prefer `defaultLocale` when a hard-coded startup locale is acceptable.
+
+---
+
+## Setup — NgModule apps (legacy)
+
+> For projects that still bootstrap with `platformBrowserDynamic().bootstrapModule(AppModule)`. This pattern is fully supported; the library ships `NgxFluentModule` specifically for this case.
+
+### 1. Register the library
+
+Import `NgxFluentModule` into your root `AppModule`. It registers `HttpClient` internally with DI-based interceptor support, so no separate `HttpClientModule` is needed:
+
+```ts
+// app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgxFluentModule } from '@zeferinix/ngx-fluent';
 
 @NgModule({
   imports: [
-    // ... your other module imports
+    BrowserModule,
     NgxFluentModule,
   ],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
 ```
 
-Then register translation sources and set the initial locale in your root component's `ngOnInit`:
+### 2. Configure sources in your root component
+
+Inject `NgxFluentService` and configure it in `ngOnInit`. Translated content appears after the first `ngOnInit` cycle rather than on first paint (unlike the standalone `defaultLocale` path):
 
 ```ts
+// app.component.ts
 import { Component, OnInit } from '@angular/core';
 import { NgxFluentService } from '@zeferinix/ngx-fluent';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  constructor(private fluentService: NgxFluentService) {}
+  constructor(private fluent: NgxFluentService) {}
 
   ngOnInit() {
-    this.fluentService.setTranslationSourceMap({
+    this.fluent.setTranslationSourceMap({
       en: 'assets/i18n/en.ftl',
-      sv: 'https://my.domain.com/translations/sv.ftl',
+      sv: 'assets/i18n/sv.ftl',
     });
-
-    this.fluentService.setLocale('en');
+    this.fluent.setLocale('en');
   }
 }
 ```
 
-*Note: Translation sources are lazy loaded then cached in memory. The translation file for a locale is only fetched after calling `setLocale()` for that locale.*
+### 3. Use the pipe
 
-*Tip: Make your locale keys compliant to the [BCP 47 standard](https://en.wikipedia.org/wiki/IETF_language_tag) as much as possible so that you don't encounter potential issues when using Fluent's built-in functions since they make use of the `Intl` API which also relies on the same standard. For example, see [`Intl.NumberFormat()'s locales`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#parameters) parameter.*
+`NgxFluentModule` exports the `fluent` pipe, making it available in all components declared in your `AppModule` — no per-component import needed:
 
-### Translation source variants
+```html
+<h1>{{ 'welcome-user' | fluent: { user: name } }}</h1>
+```
 
-Both setup approaches accept the same three source formats per locale:
+The pipe returns the key as-is if the translation cannot be resolved.
 
-**URL string**
+---
+
+## Translation source formats
+
+Each locale key in `sources` (or passed to `setTranslationSourceMap()`) accepts one of three formats:
+
+**URL string** — the library fetches the file and builds the bundle automatically:
 
 ```ts
 sources: {
@@ -123,7 +182,7 @@ sources: {
 }
 ```
 
-**URL with `FluentBundle` constructor options**
+**URL with bundle options** — same fetch, but you control the `FluentBundle` constructor config (e.g. disable Unicode isolation markers):
 
 ```ts
 sources: {
@@ -136,7 +195,7 @@ sources: {
 }
 ```
 
-**Pre-built `FluentBundle` instance**
+**Pre-built `FluentBundle` instance** — hand the library a bundle you constructed yourself. No HTTP fetch is performed:
 
 ```ts
 import { FluentBundle, FluentResource } from '@fluent/bundle';
@@ -149,51 +208,78 @@ sources: {
 }
 ```
 
-You can also call `setTranslationSourceMap()` multiple times to add locales incrementally:
+This gives you full control — useful for testing, SSR, or bundling translations at build time.
+
+*Tip: Make your locale keys compliant to the [BCP 47 standard](https://en.wikipedia.org/wiki/IETF_language_tag) to avoid issues with Fluent's built-in functions that rely on the `Intl` API.*
+
+---
+
+## Adding locales incrementally
+
+Sources don't have to be declared all at once. Call `setTranslationSourceMap()` at any point to register additional locales — for example, when the user opens a language picker for the first time:
 
 ```ts
-this.fluentService.setTranslationSourceMap({ en: 'assets/i18n/en.ftl' });
-this.fluentService.setLocale('en');
+// On startup, register only the default
+this.fluent.setTranslationSourceMap({ en: 'assets/i18n/en.ftl' });
+this.fluent.setLocale('en');
 
-// ... later ...
-this.fluentService.setTranslationSourceMap({ sv: 'assets/i18n/sv.ftl' });
+// Later, register more on demand
+this.fluent.setTranslationSourceMap({ sv: 'assets/i18n/sv.ftl', fr: 'assets/i18n/fr.ftl' });
 ```
 
-### Switching locale
+Passing a locale key that is already loaded causes its translations to be reloaded from the new source.
+
+---
+
+## Switching locale
+
+Call `setLocale()` on `NgxFluentService` at any time. The service fetches the translation file if not already cached, then all active `fluent` pipes update reactively:
 
 ```ts
-export class MyComponent {
-  switchLocale(locale: string) {
-    this.fluentService.setLocale(locale);
-  }
+// standalone
+private fluent = inject(NgxFluentService);
+
+// NgModule
+constructor(private fluent: NgxFluentService) {}
+
+// both
+this.fluent.setLocale('sv');
+```
+
+Switching to a previously loaded locale is instantaneous — files are cached in memory after the first fetch.
+
+---
+
+## Translating programmatically
+
+`translate()` is synchronous and reads directly from the currently loaded bundle:
+
+```ts
+// standalone
+private fluent = inject(NgxFluentService);
+
+// NgModule
+constructor(private fluent: NgxFluentService) {}
+
+// both
+getLabel(key: string) {
+  return this.fluent.translate(key, { user: 'John' }) ?? key;
 }
 ```
 
-### Pipe
+Returns `null` if the locale is not loaded or the key is not found. The `?? key` fallback mirrors what the pipe does automatically.
 
-Use the `fluent` pipe in your templates:
+---
 
-```angular
-{{ 'welcome-user' | fluent: { user: 'John Doe' } }}
-```
+## Example projects
 
-*Note: The pipe returns the key if the translation cannot be resolved.*
+This repository ships two example projects.
 
-### Programmatically via service
+**`ngx-fluent-example-standalone`** — a modern Angular 22 standalone app. Zoneless (no `zone.js`), signal-based component state, `OnPush` change detection by default, `provideNgxFluent` in `app.config.ts`. Reference implementation for new projects consuming the library today.
 
-Call `translate()` on the service to translate a message. The method is synchronous — it reads from the currently loaded bundle and returns immediately.
+**`ngx-fluent-example`** — an Angular 22 project intentionally structured with `AppModule` and `platformBrowserDynamic` bootstrap. For teams that cannot yet migrate to standalone — demonstrates that `NgxFluentModule` provides the same behavior under the NgModule pattern. Retains `zone.js`, `ChangeDetectionStrategy.Eager`, and constructor injection, all of which are correct for that pattern.
 
-*Note: Returns `null` if the locale or message key cannot be resolved.*
-
-```ts
-export class MyComponent {
-  translate(key: string, args?: Record<string, any>) {
-    const translation = this.fluentService.translate(key, args);
-    console.log(translation);
-    return translation;
-  }
-}
-```
+---
 
 ## Contributing
 
