@@ -55,7 +55,6 @@ export class NgxFluentPipe implements PipeTransform {
       });
     }
 
-    // FIXME: Could probably be optimized to only update when the args change?
     if (key !== this.previousKey || !isEqual(args, this.previousArgs)) {
       this.previousKey = key;
       this.previousArgs = args;
