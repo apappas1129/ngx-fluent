@@ -42,9 +42,12 @@ No changelog was recorded for versions prior to 19.0.0.
 
 ### Standalone example (`ngx-fluent-example-standalone`)
 
-- **Signal-based name field.** `name` is now a `signal<string>('John Doe')` instead of a plain class property. `FormsModule` and `[(ngModel)]` removed; the input uses `[value]="name()" (input)="updateName($event)"` instead. This keeps all component state in Angular's reactive graph.
-- **Explicit `OnPush`.** The migration schematic added `Eager`; this was immediately changed to `ChangeDetectionStrategy.OnPush` because the component is fully signal-driven and `Eager` would be a regression.
-- **Signal Forms note** added as a comment in the component: `@angular/forms/signals` is stable in Angular 22 and is the right choice for forms that require validation. For this one-field, no-validation example a plain signal is sufficient.
+- **Zoneless by default.** The migration schematic added `provideZoneChangeDetection({ eventCoalescing: true })` and left the `zone.js` polyfill in place — both are migration artifacts for existing zone-based apps. A fresh Angular 22 project has neither. These were reverted: `zone.js` removed from the build polyfills and `provideZoneChangeDetection` removed from `app.config.ts`. New library consumers targeting Angular 22 do not need zone.js.
+- **`withXhr()` reverted.** The migration schematic added it because it was detected in the broader workspace (legacy example). The standalone example uses the Fetch backend like any new Angular 22 app.
+- **`provideBrowserGlobalErrorListeners()` kept.** This is the Angular 22 standard for all apps — registers global error and unhandled-rejection handlers. Fresh Angular 22 projects scaffold with it automatically.
+- **Signal-based name field.** `name` is now a `signal<string>('John Doe')` instead of a plain class property. `FormsModule` and `[(ngModel)]` removed; the input uses `[value]="name()" (input)="updateName($event)"` instead.
+- **Explicit `OnPush`.** The migration schematic added `Eager`; changed to `ChangeDetectionStrategy.OnPush` because the component is fully signal-driven.
+- **Signal Forms note** added as a comment: `@angular/forms/signals` is stable in Angular 22 and is the right choice for forms with validation. A plain signal is sufficient for this no-validation demo.
 
 ### Legacy example (`ngx-fluent-example`)
 
