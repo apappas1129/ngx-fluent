@@ -6,6 +6,13 @@
     "email": "apappas1129@gmail.com",
     "name": "Alex Pappas"
   },
+  "contributors": [
+    {
+      "name": "Cerino Ligutom III",
+      "email": "zeferinix@gmail.com",
+      "url": "https://www.zeferinix.com"
+    }
+  ],
   "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^22.0.0",
