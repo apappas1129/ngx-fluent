@@ -9,6 +9,8 @@ jobs:
   publish:
     name: 'Publish'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +30,4 @@ jobs:
         run: cp -rf README.md ./dist/ngx-fluent
 
       - name: Publish to NPM
-        run: cd ./dist/ngx-fluent && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: cd ./dist/ngx-fluent && npm publish --access public --provenance
