@@ -33,4 +33,13 @@ module.exports = tseslint.config(
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {},
   },
+  // Legacy NgModule example — intentionally non-standalone, zone-based, constructor injection.
+  {
+    files: ['projects/ngx-fluent-example/**/*.ts'],
+    rules: {
+      '@angular-eslint/prefer-standalone': 'off',
+      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
+      '@angular-eslint/prefer-inject': 'off',
+    },
+  },
 );

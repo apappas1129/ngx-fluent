@@ -5,9 +5,7 @@ import { NgxFluentService } from '@zeferinix/ngx-fluent';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  // eslint-disable-next-line @angular-eslint/prefer-standalone
-  // OnPush is the Angular 22 default. Eager (formerly Default) is kept here because this
-  // NgModule component relies on zone-based CD and mutable class properties.
+  // Eager (formerly Default) is correct here — NgModule component with zone-based CD and mutable properties.
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
