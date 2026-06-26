@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -33,7 +33,10 @@ jobs:
         run: npm run lint
 
       - name: Run ngx-fluent tests
-        run: npm run test:headless -- ngx-fluent
+        run: npm run test:lib
 
       - name: Run ngx-fluent-example tests
-        run: npm run test:headless -- ngx-fluent-example
+        run: npm run test:legacy
+
+      - name: Run ngx-fluent-example-standalone tests
+        run: npm run test:standalone
