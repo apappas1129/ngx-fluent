@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
-import { provideNgxFluent } from '@zeferinix/ngx-fluent';
+import { provideNgxFluent } from '@apappas1129/ngx-fluent';
 
 // Angular 22 new projects are zoneless by default — no zone.js polyfill, no provideZoneChangeDetection.
 // provideBrowserGlobalErrorListeners() registers Angular's global error and rejection handlers.

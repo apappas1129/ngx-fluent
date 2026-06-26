@@ -6,7 +6,7 @@ An [Angular](https://angular.io/) library for [Fluent](https://projectfluent.org
 
 Latest version available for each version of Angular
 
- | @zeferinix/ngx-fluent | Angular | @fluent/bundle |
+ | @apappas1129/ngx-fluent | Angular | @fluent/bundle |
  | --------------------- | ------- | -------------- |
  | >= 1.0                | 13.x    | < 1.x          |
  | >= 1.1                | 14.x    | < 1.x          |
@@ -22,7 +22,7 @@ Latest version available for each version of Angular
 ## Installation
 
 ```bash
-npm install --save @fluent/bundle @zeferinix/ngx-fluent
+npm install --save @fluent/bundle @apappas1129/ngx-fluent
 ```
 
 ---
@@ -39,7 +39,7 @@ Add `provideHttpClient()` and `provideNgxFluent()` to your `ApplicationConfig`. 
 // app.config.ts
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
-import { provideNgxFluent } from '@zeferinix/ngx-fluent';
+import { provideNgxFluent } from '@apappas1129/ngx-fluent';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -63,7 +63,7 @@ export const appConfig: ApplicationConfig = {
 Import `NgxFluentPipe` in any standalone component that needs translations:
 
 ```ts
-import { NgxFluentPipe } from '@zeferinix/ngx-fluent';
+import { NgxFluentPipe } from '@apappas1129/ngx-fluent';
 
 @Component({
   imports: [NgxFluentPipe],
@@ -120,7 +120,7 @@ Import `NgxFluentModule` into your root `AppModule`. It registers `HttpClient` i
 // app.module.ts
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgxFluentModule } from '@zeferinix/ngx-fluent';
+import { NgxFluentModule } from '@apappas1129/ngx-fluent';
 
 @NgModule({
   imports: [
@@ -139,7 +139,7 @@ Inject `NgxFluentService` and configure it in `ngOnInit`. Translated content app
 ```ts
 // app.component.ts
 import { Component, OnInit } from '@angular/core';
-import { NgxFluentService } from '@zeferinix/ngx-fluent';
+import { NgxFluentService } from '@apappas1129/ngx-fluent';
 
 @Component({
   selector: 'app-root',

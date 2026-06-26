@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { NgxFluentService } from '@zeferinix/ngx-fluent';
+import { NgxFluentService } from '@apappas1129/ngx-fluent';
 
 @Component({
   selector: 'app-root',

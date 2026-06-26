@@ -1,11 +1,10 @@
 {
-  "name": "@zeferinix/ngx-fluent",
+  "name": "@apappas1129/ngx-fluent",
   "version": "22.0.0",
   "description": "An Angular library for Fluent",
   "author": {
-    "email": "zeferinix@gmail.com",
-    "name": "Cerino Ligutom III",
-    "url": "https://www.zeferinix.com"
+    "email": "apappas1129@gmail.com",
+    "name": "Alex Pappas"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -18,9 +17,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zeferinix/ngx-fluent.git"
+    "url": "https://github.com/apappas1129/ngx-fluent.git"
   },
-  "homepage": "https://github.com/zeferinix/ngx-fluent#readme",
+  "homepage": "https://github.com/apappas1129/ngx-fluent#readme",
   "keywords": [
     "i18n",
     "internationalization",

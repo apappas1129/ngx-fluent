@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 > **Versioning note:** Starting from v19.0.0 the library's major version matches the minimum required Angular major version. Prior releases used an independent semver sequence (see table below).
 
-| @zeferinix/ngx-fluent | Angular |
+| @apappas1129/ngx-fluent | Angular |
 | --------------------- | ------- |
 | >= 1.0                | 13.x    |
 | >= 1.1                | 14.x    |

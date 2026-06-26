@@ -1,10 +1,9 @@
 {
-  "name": "@zeferinix/ngx-fluent",
+  "name": "@apappas1129/ngx-fluent",
   "description": "An Angular library for Fluent",
   "author": {
-    "email": "zeferinix@gmail.com",
-    "name": "Cerino Ligutom III",
-    "url": "https://www.zeferinix.com"
+    "email": "apappas1129@gmail.com",
+    "name": "Alex Pappas"
   },
   "license": "MIT",
   "scripts": {

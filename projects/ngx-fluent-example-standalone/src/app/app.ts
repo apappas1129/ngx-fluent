@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { NgxFluentPipe, NgxFluentService } from '@zeferinix/ngx-fluent';
+import { NgxFluentPipe, NgxFluentService } from '@apappas1129/ngx-fluent';
 
 // Angular 22: OnPush is the default change detection strategy for new components.
 // All state here is signal-based so Angular's reactive graph drives re-renders without
