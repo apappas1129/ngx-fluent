@@ -11,14 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: npm ci
 
@@ -29,4 +31,4 @@ jobs:
         run: cp -rf README.md ./dist/ngx-fluent
 
       - name: Publish to NPM
-        run: cd ./dist/ngx-fluent && npm publish --access public --provenance
+        run: cd ./dist/ngx-fluent && npm publish --access public
